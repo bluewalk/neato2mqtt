@@ -1,7 +1,7 @@
 const mqtt = require('mqtt');
 const { Client } = require('node-botvac');
 
-const mqttServer = process.env.MQTT_SERVER || 'mqtt://localhost';
+const mqttServer = process.env.MQTT_HOST || 'mqtt://localhost';
 const email = process.env.NEATO_EMAIL;
 const password = process.env.NEATO_PASSWORD;
 const rootTopic = process.env.MQTT_ROOT_TOPIC || 'neato';
@@ -37,13 +37,10 @@ function getState(robot) {
         mqttClient.publish(`${topic}/state/eco`, JSON.stringify(state.cleaning.mode === 1));
 
         if (state.cleaning.category === 4) {
-            mqttClient.publish(`${topic}/state/noGoLines`, JSON.stringify(state));
+            mqttClient.publish(`${topic}/state/noGoLines`, JSON.stringify(true));
         }
         else if (state.cleaning.category === 2) {
-            mqttClient.publish(`${topic}/state/noGoLines`, JSON.stringify(state));
-        }
-        else if (mqttClient.publish(`${topic}/state/noGoLines`, JSON.stringify(state))) {
-            mqttClient.publish(`${topic}/state/noGoLines`, JSON.stringify(state));
+            mqttClient.publish(`${topic}/state/noGoLines`, JSON.stringify(false));
         }
 
         mqttClient.publish(`${topic}/state/navigationMode`, JSON.stringify(state.cleaning.navigationMode));
