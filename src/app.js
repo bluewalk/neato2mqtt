@@ -20,36 +20,30 @@ function getState(robot) {
             return;
         }
 
-        const topic = `${rootTopic}/${robot._serial}`;
-
-        mqttClient.publish(`${topic}/state/availableServices`, JSON.stringify(state.availableServices));
-        mqttClient.publish(`${topic}/state/isBinFull`, JSON.stringify(state.alert == "dustbin_full"));
-        mqttClient.publish(`${topic}/state/isCharging`, JSON.stringify(state.details.isCharging));
-        mqttClient.publish(`${topic}/state/isDocked`, JSON.stringify(state.details.isDocked));
-        mqttClient.publish(`${topic}/state/isScheduleEnabled`, JSON.stringify(state.details.isScheduleEnabled));
-        mqttClient.publish(`${topic}/state/dockHasBeenSeen`, JSON.stringify(state.details.dockHasBeenSeen));
-        mqttClient.publish(`${topic}/state/charge`, JSON.stringify(state.details.charge));
-        mqttClient.publish(`${topic}/state/canStart`, JSON.stringify(state.availableCommands.start));
-        mqttClient.publish(`${topic}/state/canStop`, JSON.stringify(state.availableCommands.stop));
-        mqttClient.publish(`${topic}/state/canPause`, JSON.stringify(state.availableCommands.pause));
-        mqttClient.publish(`${topic}/state/canResume`, JSON.stringify(state.availableCommands.resume));
-        mqttClient.publish(`${topic}/state/canGoToBase`, JSON.stringify(state.availableCommands.goToBase));
-        mqttClient.publish(`${topic}/state/eco`, JSON.stringify(state.cleaning.mode === 1));
-
-        if (state.cleaning.category === 4) {
-            mqttClient.publish(`${topic}/state/noGoLines`, JSON.stringify(true));
+        let data = {
+            availableServices: JSON.stringify(state.availableServices),
+            isBinFull: JSON.stringify(state.alert == "dustbin_full"),
+            isCharging: JSON.stringify(state.details.isCharging),
+            isDocked: JSON.stringify(state.details.isDocked),
+            isScheduleEnabled: JSON.stringify(state.details.isScheduleEnabled),
+            dockHasBeenSeen: JSON.stringify(state.details.dockHasBeenSeen),
+            charge: JSON.stringify(state.details.charge),
+            canStart: JSON.stringify(state.availableCommands.start),
+            canStop: JSON.stringify(state.availableCommands.stop),
+            canPause: JSON.stringify(state.availableCommands.pause),
+            canResume: JSON.stringify(state.availableCommands.resume),
+            canGoToBase: JSON.stringify(state.availableCommands.goToBase),
+            eco: JSON.stringify(state.cleaning.mode === 1),
+            noGoLines: state.cleaning.category === 4,
+            navigationMode: JSON.stringify(state.cleaning.navigationMode),
+            spotWidth: JSON.stringify(state.cleaning.spotWidth),
+            spotHeight: JSON.stringify(state.cleaning.spotHeight),
+            spotRepeat: JSON.stringify(state.cleaning.modifier === 2),
+            cleaningBoundaryId: JSON.stringify(state.cleaning.boundaryId),
+            lastUpdate: new Date().toISOString()
         }
-        else if (state.cleaning.category === 2) {
-            mqttClient.publish(`${topic}/state/noGoLines`, JSON.stringify(false));
-        }
 
-        mqttClient.publish(`${topic}/state/navigationMode`, JSON.stringify(state.cleaning.navigationMode));
-        mqttClient.publish(`${topic}/state/spotWidth`, JSON.stringify(state.cleaning.spotWidth));
-        mqttClient.publish(`${topic}/state/spotHeight`, JSON.stringify(state.cleaning.spotHeight));
-        mqttClient.publish(`${topic}/state/spotRepeat`, JSON.stringify(state.cleaning.modifier === 2));
-        mqttClient.publish(`${topic}/state/cleaningBoundaryId`, JSON.stringify(state.cleaning.boundaryId));
-
-        mqttClient.publish(`${topic}/state/lastUpdate`, new Date().toISOString());
+        mqttClient.publish(`${rootTopic}/${robot._serial}/state`, JSON.stringify(data));
     });
 }
 
